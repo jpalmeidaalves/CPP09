@@ -1,0 +1,25 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: c++ build active file",
+            "command": "/usr/bin/c++",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "$/home/joaoalme/Projetcs42/CPP06/ex02/cast"
+            ],
+            "options": {
+                "cwd": "$/home/joaoalme/Projetcs42/cpp06/ex02"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "compiler: /usr/bin/c++"
+        }
+    ],
+    "version": "2.0.0"
+}
