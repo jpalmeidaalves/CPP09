@@ -9,10 +9,10 @@
                 "-g",
                 "${file}",
                 "-o",
-                "$/home/joaoalme/Projetcs42/CPP06/ex02/cast"
+                "$/home/joaoalme/Projetcs42/CPP09/ex01"
             ],
             "options": {
-                "cwd": "$/home/joaoalme/Projetcs42/cpp06/ex02"
+                "cwd": "/home/joaoalme/Projetcs42/CPP09/ex01"
             },
             "problemMatcher": [
                 "$gcc"

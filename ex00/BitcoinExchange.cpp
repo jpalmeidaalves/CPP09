@@ -11,7 +11,7 @@ BitcoinExchange::BitcoinExchange()
 	rdFile.open("data.csv", std::ios::in);
 	if (rdFile.fail())
 	{
-		std::cerr << "Fail opening file";
+		std::cerr << "Fail opening source file";
 		exit(1);
 	}
 	while (rdFile >> line)
@@ -22,16 +22,13 @@ BitcoinExchange::BitcoinExchange()
 		this->_db.insert(std::pair<std::string, float>(line.substr(0, comma), fvalue));
 	}
 	rdFile.close();
-	return;
 }
 BitcoinExchange::BitcoinExchange(const BitcoinExchange & obj)
 {
 	*this = obj;
-	return;
 }
 BitcoinExchange::~BitcoinExchange()
 {
-	return;
 }
 BitcoinExchange    &BitcoinExchange::operator=( BitcoinExchange const & obj)
 {
@@ -46,14 +43,7 @@ void	BitcoinExchange::printDbMap(std::ostream & out)
 {
 	for(std::map<std::string, float>::iterator it = this->_db.begin(); it != this->_db.end(); ++it)
 	{
-		out <<it->first << "," << it->second << std::endl;
-	}
-}	
-void	BitcoinExchange::printInputMap()
-{
-	for(std::map<std::string, float>::iterator it = this->_input.begin(); it != this->_input.end(); ++it)
-	{
-		std::cout <<it->first << "," << it->second << std::endl;
+		out <<it->first << "  " << it->second << std::endl;
 	}
 }	
 
@@ -63,59 +53,84 @@ std::ostream &	operator<<(std::ostream & out, BitcoinExchange & obj)
 	return(out);
 }
 
-int		BitcoinExchange::getInput(char *inputFile)
+int		BitcoinExchange::getResult(char *inputFile)
 {
-	std::fstream		filestream;
-	std::string			buf;
+	std::fstream	fs;
+	std::string		line;
+	std::string		date;
+	char			sep;
+    std::string		value;
 
-	filestream.open(inputFile, std::ios::in);
-	if (filestream.fail())
+	fs.open(inputFile, std::ios::in);
+	if (fs.fail())
 	{
 		std::cerr << "Fail opening file";
 		return (-1);
 	}
-	getline(filestream, buf);
-	if (buf != "date | value")
+	getline(fs, line);
+	if (line != "date | value")
 		std::cout << "Error: file does not match expected syntax" << std::endl;
-	while (getline(filestream, buf))
-	{
-		this->getValueByDate(buf);
-	}
+	while (1)
+    {
+		getline(fs, line);
+		std::stringstream ss(line);
+        ss >> date >> sep >> value;
+		if (sep != '|') 
+        	std::cout << "Error: bad input => " << line << std::endl;
+        else if (validateDate(date))
+		{
+            if (validateValue(atof(value.c_str())))
+				std::cout <<  date << " => " << value << " = " << atof(value.c_str()) * searchInDb(date) << std::endl;
+			else
+				std::cout << "Error: Value must be beteewn 0 and 1000" << std::endl;
+		}
+        else 
+            std::cout << "Error: bad input => " << line << std::endl;
+        if (fs.eof()) 
+            break;
+    }
+    fs.close();
+	
 
+	return 0;
 }
-void	getValueByDate(const std::string& buf)
+bool	BitcoinExchange::validateDate(std::string& dateStr) const
+{	
+	std::stringstream s(dateStr);
+	int	year, month, day;
+	char dash1, dash2;
+    int monthsDays[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	if (!(s >> year >> dash1 >> month >> dash2 >> day)
+        || dash1 != '-' || dash2 != '-' || s.fail() || s.bad())
+    {
+        std::cout << "Invalid date format";
+        return false;
+    }
+    if (year < 1970 || year > 2023 )
+        return false;
+    if (month < 1 || month > 12)
+        return false;
+    if (day < 1 || day > monthsDays[month])
+        return false;
+    return (true);
+}
+
+bool    BitcoinExchange::validateValue(float value) const
 {
-	std::stringstream	strStreamBuf(buf);
-	std::string			date;
-	std::string			amount;
-
-	getline(strStreamBuf, date, '|');
-	std::cout << date << std::endl;
+    if (value < 0 || value > 1000)
+    {
+        
+        return (false);
+    }
+    return (true);
 }
 
-// int		BitcoinExchange::getInput(char *inputFile)
-// {
-// 	std::fstream	istream;
-// 	std::string		line, s1, pipe, s2;
-// 	// float			amount;
-
-
-// 	istream.open(inputFile, std::ios::in);
-// 	if (istream.fail())
-// 	{
-// 		std::cerr << "Fail opening file";
-// 		return (-1);
-// 	}
-// 	std::getline(istream, s1);
-// 	std::cout << s1 << std::endl;
-// 	while (!istream.eof())
-// 	{
-// 		std::getline(istream, line);
-// 		istream >> s1 >> pipe >> s2;
-// 		// amount = atof(s2.c_str());
-// 		std::cout << s1 << std::endl;
-// 		std::cout << pipe << std::endl;
-// 		std::cout << s2 << std::endl;
-// 	}
-// 	return(0);
-// }
+float	BitcoinExchange::searchInDb(std::string date)
+{
+	for (std::map<std::string, float>::reverse_iterator it = _db.rbegin(); it != _db.rend(); ++it)
+	{
+		if (it->first <= date)
+			return (it->second);
+	}
+	return (0);
+}	

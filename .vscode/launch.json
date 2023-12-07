@@ -9,10 +9,10 @@
         "name": "C++ Launch",
         "type": "cppdbg",
         "request": "launch",
-        "program": "/home/joaoalme/Projetcs42/CPP06/ex02/cast", // Update this with your compiled executable path
-        "args": [],
+        "program": "/home/joaoalme/Projetcs42/CPP09/ex01/a.out", // Update this with your compiled executable path
+        "args": ["7 7 * 7 -"],
         "stopAtEntry": false,
-        "cwd": "/home/joaoalme/Projetcs42/CPP06/ex02",
+        "cwd": "/home/joaoalme/Projetcs42/CPP09/ex01",
         "environment": [],
         "externalConsole": false,
         "MIMode": "gdb",

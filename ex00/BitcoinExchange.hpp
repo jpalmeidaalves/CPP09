@@ -4,10 +4,11 @@
 # include <iostream>
 # include <map>
 # include <fstream>
+# include <sstream>
 # include <cstring>
 # include <string>
 # include <cstdlib>
-# include <iomanip>  
+# include <iomanip> 
 
 class BitcoinExchange 
 {
@@ -20,11 +21,12 @@ class BitcoinExchange
 		BitcoinExchange(const BitcoinExchange & obj);
 		~BitcoinExchange();  
 		
-		int		getInput(char *inputFile);
-		void	getValueByDate(std::string &buf);
+		int		getResult(char *inputFile);
+		bool	validateDate(std::string& date) const;
+		bool    validateValue(float value) const;
+		float	searchInDb(std::string date);
 		
 		void	printDbMap(std::ostream & out);
-		void	printInputMap();
 
 
 		BitcoinExchange    &operator=(BitcoinExchange const & obj); 
