@@ -9,11 +9,12 @@ int        main(int ac, char **av)
     }
     std::string exp = av[1];
     RPN     test(exp);
-    RPN     copy = test;
-    copy.printStack();
-    std::cout << "test result: ";
-    test.calculate(); 
-    std::cout << "copy result: ";
-    copy.calculate();   
+    test.calculate(exp);
+    
+    // RPN     copy = test;
+    // copy.printStack();
+    // std::cout << "copy result: ";
+    // copy.calculate();
+      
     return (0);
 }   

@@ -12,6 +12,7 @@ BitcoinExchange::BitcoinExchange()
 	if (rdFile.fail())
 	{
 		std::cerr << "Fail opening source file";
+		rdFile.close();
 		exit(1);
 	}
 	while (rdFile >> line)

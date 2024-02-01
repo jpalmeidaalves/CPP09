@@ -10,21 +10,27 @@
 class RPN 
 {
 	private:
-		std::stack<int>		_stack;
+		std::stack<int>	_stack;
+		int     		a;
+    	int     		b;
+    	char    		op;
+    	int     		result;
+    	char    		token;
+
 		RPN();
 		bool    isOperator(char c);
-		bool    checkForSpace(std::string exp);
-		bool    checkIntegrity(std::string exp);
+		bool    checkExpression(std::string exp);
+		void	exitError(std::string str);
 	
 	public:
 		RPN(std::string	expression);
 		RPN(const RPN & obj);
 		~RPN();  
 		
-		void    calculate();
+		void    calculate(std::string exp);
 		void	printStack();
 		RPN		&operator=(RPN const & obj); 
-		
-
 };
+
 #endif
+

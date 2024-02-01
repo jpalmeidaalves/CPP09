@@ -4,26 +4,10 @@ RPN::RPN() {}
 
 RPN::RPN(std::string exp)
 {
-	if (!checkForSpace(exp) || !checkIntegrity(exp))
+	if (!checkExpression(exp))
     {
         std::cout << "Error: Invalid expression" << std::endl;
         exit(1);
-    }
-   
-    std::reverse(exp.begin(), exp.end());
-    std::stringstream ss(exp);
-    char    token;
-    while(ss >> token)
-    {
-        if (isdigit(token))
-            _stack.push(token - '0');
-        else if (isOperator(token))
-            _stack.push(token);
-        else
-        {
-            std::cout << "Error: Invalid expression" << std::endl;
-            exit(1);
-        }
     }
 }
 
@@ -44,42 +28,40 @@ RPN    &RPN::operator=( RPN const & obj)
 /*	Calculates the expression by executing one operation at time 
 	Pops the two first numbers and the operator from the stack
 	Then pushes the result back to the stack */
-void    RPN::calculate()
+void    RPN::calculate(std::string exp)
 {
-	int     a;
-    int     b;
-    char    op;
-    int     result;
-	while(_stack.size() > 1)
+    std::stringstream ss(exp);
+    while (ss >> token)
     {
-		a = this->_stack.top();
-		this->_stack.pop();
-		b = this->_stack.top();
-		this->_stack.pop();
-		op = this->_stack.top();
-		if (op != '+' && op != '-' && op != '*' && op != '/')
-		{
-			std::cout << "Invalid expression" << std::endl;
-			exit(1);
-		}
-		this->_stack.pop();
-		if (op == '+')
-			result = a + b;
-		else if (op == '-')
-			result = a - b;
-		else if (op == '*')
-			result = a * b;
-		else if (op == '/')
-		{
-			if (b == 0)
-			{
-				std::cout << "Error: division by zero" << std::endl;
-				exit(1);
-			}
-			result = a / b;
-		}
-		this->_stack.push(result);
+        if (isdigit(token))
+            this->_stack.push(token - '0');
+        if ( isOperator(token))
+        {
+            if (this->_stack.size() < 2)
+                exitError("Operand(s) is missing");
+            op = token;
+            b = this->_stack.top();
+            this->_stack.pop();
+            a = this->_stack.top();
+            this->_stack.pop();
+            if (op == '+')
+                result = a + b;
+            else if (op == '-')
+                result = a - b;
+            else if (op == '*')
+                result = a * b;
+            else if (op == '/')
+            {
+                if (b == 0)
+                    exitError("Division by zero.");
+                result = a / b;
+            }
+            std::cout << a <<  op << b << "=" << result << std::endl; // Uncoment to see operations
+            this->_stack.push(result);
+        }
 	}
+    if (this->_stack.size() != 1)
+        exitError("Operator(s) is missing");
     std::cout << this->_stack.top() << std::endl;
 }
 bool	RPN::isOperator(char c)
@@ -89,7 +71,7 @@ bool	RPN::isOperator(char c)
     return (false);
 }
 /* check if theres a space between each expression's characters*/
-bool    RPN::checkForSpace(std::string exp)
+bool    RPN::checkExpression(std::string exp)
 {
     bool    isChar = false;
     if (exp.size() < 5)
@@ -110,33 +92,10 @@ bool    RPN::checkForSpace(std::string exp)
     return (true);
 }
 
-/* Check the alternance between spaces and operators*/
-bool    RPN::checkIntegrity(std::string exp)
+void    RPN::exitError(std::string str)
 {
-    bool   isDigit = true;
-    bool   isOp = false;
-    exp.erase(std::remove(exp.begin(), exp.end(), ' '), exp.end());
-    if (!isOperator((exp[exp.size() -1])) || !isdigit(exp[0]) || !isdigit(exp[1]))
-        return (false);
-   
-    for (int i = 2; i < (int)exp.size(); i++)
-    {
-        if (isDigit)
-        {
-            if (isdigit(exp[i]))
-                return(false);
-            isDigit = false;
-            isOp = true;
-        }
-        else if (isOp)
-        {
-            if (isOperator(exp[i]))
-                return (false);
-            isDigit = true;
-            isOp = false;
-        }
-    }
-    return(true);
+    std::cout << "Error: " << str << std::endl;
+    exit(1);
 }
 
 void	RPN::printStack()
